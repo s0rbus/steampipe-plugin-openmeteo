@@ -4,6 +4,8 @@ https://open-meteo.com/
 
 Use SQL to query weather forecast data from Open-Meteo.
 
+The plugin utilises the Go Open-Meteo client 'omgo' - https://github.com/HectorMalot/omgo/
+
 This is in early development stages. Currently some hourly and daily forecast data is available.
 
 Open_Meteo does not require registration or an API KEY but non-commercial use is limited to 10,000 requests per day. Rate limiting to address this has not yet been implemented/configured in the plugin.
