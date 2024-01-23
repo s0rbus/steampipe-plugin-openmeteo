@@ -155,7 +155,7 @@ func tableDailyWeatherList(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	}
 	forecast, err := c.Forecast(ctx, loc, &opts)
 	if err != nil {
-		plugin.Logger(ctx).Error("forecast error", "err", err)
+		plugin.Logger(ctx).Error("openmeteo_daily_weather.tableDailyWeatherList", "forecast api error", err)
 		return nil, err
 	}
 
@@ -194,6 +194,10 @@ func tableDailyWeatherList(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 			WindGusts10mMax:          forecast.DailyMetrics["wind_gusts_10m_max"][i],
 			WindDirection10mDominant: forecast.DailyMetrics["wind_direction_10m_dominant"][i],
 		})
+		// Check if context has been cancelled or if the limit has been hit (if specified)
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
+		}
 	}
 	return nil, nil
 }

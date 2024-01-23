@@ -119,7 +119,7 @@ func tableHourlyWeatherList(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	}
 	forecast, err := c.Forecast(ctx, loc, &opts)
 	if err != nil {
-		plugin.Logger(ctx).Error("forecast error", "err", err)
+		plugin.Logger(ctx).Error("openmeteo_hourly_weather.tableHourlyWeatherList", "forecast api error", err)
 		return nil, err
 	}
 
@@ -131,8 +131,6 @@ func tableHourlyWeatherList(ctx context.Context, d *plugin.QueryData, _ *plugin.
 		CloudCover     float64
 		WindSpeed10m   float64
 	}
-
-	//plugin.Logger(ctx).Info("hourlytimes", "len", len(forecast.HourlyTimes))
 
 	//At the moment the Open-Meteo client does not implement forecast days option so
 	//implementing it manually for now. This means can only do up to default (7), not up to
@@ -150,6 +148,10 @@ func tableHourlyWeatherList(ctx context.Context, d *plugin.QueryData, _ *plugin.
 			CloudCover:     forecast.HourlyMetrics["cloud_cover"][i],
 			WindSpeed10m:   forecast.HourlyMetrics["wind_speed_10m"][i],
 		})
+		// Check if context has been cancelled or if the limit has been hit (if specified)
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
+		}
 	}
 	return nil, nil
 }
